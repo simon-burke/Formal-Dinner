@@ -25,13 +25,29 @@ class RequestHandler(BaseHTTPRequestHandler):
         #Body of reply
         tablenumber = 0
         table = []
-        linenumber = 1
+        linenumber = 0
+        students = []
         with open('FDTables.csv') as csv_file:
             csv_reader = csv.reader(csv_file, delimiter = ',')
             for row in csv_reader:
-                json_reply = json.dumps({'name': row[0].replace('|', '').replace('W', ''), 'table': row[1].replace('|', '')})
-                self.wfile.write(json_reply.encode(encoding='utf_8'))
-            linenumber += 1
+                linenumber += 1
+                if 'W' in row[1]:
+                    student = {
+                    'name' : row[0].replace('|', ''),
+                    'table' : row[1].replace('|','').replace('W', ''),
+                    "waiter" : "Yes"
+                    }
+                else:
+                    student = {
+                    'name' : row[0].replace('|', ''),
+                    'table' : row[1].replace('|','').replace('W', ''),
+                    'waiter' : 'No'
+                    }
+                students.append(student)
+        seating = {"students" : students}
+        json_reply = json.dumps(seating)
+        self.wfile.write(json_reply.encode(encoding='utf_8'))
+
 
 
 # Listen on Port 80
